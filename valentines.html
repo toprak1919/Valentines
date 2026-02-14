@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY HERO - Valentine's Day</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Russo+One&family=Noto+Sans+JP:wght@700;900&display=swap');
+
+  :root {
+    --mha-green: #5CB85C;
+    --mha-dark-green: #2D5F2D;
+    --mha-yellow: #FFD700;
+    --mha-red: #E74C3C;
+    --mha-orange: #FF6B35;
+    --mha-dark: #1a1a2e;
+    --mha-darker: #0f0f1a;
+    --mha-blue: #3498DB;
+    --mha-pink: #FF69B4;
+    --mha-white: #F5F5F5;
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
+    --sharp: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--mha-darker);
+    overflow: hidden;
+    font-family: 'Bangers', cursive;
+    width: 100vw;
+    height: 100vh;
+    cursor: default;
+  }
+
+  /* ===== SPEED LINES BACKGROUND ===== */
+  .speed-lines {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.08;
+  }
+
+  .speed-line {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--mha-white), transparent);
+    animation: speedLine 0.8s linear infinite;
+  }
+
+  @keyframes speedLine {
+    0% { transform: translateY(-100vh); }
+    100% { transform: translateY(100vh); }
+  }
+
+  /* ===== PARTICLES ===== */
+  .particles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+    50% { transform: translateY(-30px) rotate(180deg); opacity: 1; }
+  }
+
+  /* ===== SCREEN CONTAINER ===== */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s var(--spring);
+    pointer-events: none;
+    padding: 20px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .screen.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  /* ===== MANGA PANEL STYLE ===== */
+  .manga-panel {
+    position: relative;
+    border: 4px solid var(--mha-white);
+    border-radius: 4px;
+    padding: 30px 40px;
+    max-width: 800px;
+    width: 90%;
+    background: rgba(15, 15, 26, 0.95);
+    box-shadow:
+      8px 8px 0 rgba(0,0,0,0.5),
+      inset 0 0 60px rgba(92, 184, 92, 0.05);
+    overflow: hidden;
+  }
+
+  .manga-panel::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    pointer-events: none;
+  }
+
+  /* ===== ACTION LINES BURST ===== */
+  .action-burst {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .action-burst::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -50%);
+    background: repeating-conic-gradient(
+      transparent 0deg,
+      transparent 4deg,
+      rgba(255,255,255,0.02) 4deg,
+      rgba(255,255,255,0.02) 5deg
+    );
+  }
+
+  /* ===== HERO TITLE STYLE ===== */
+  .hero-title {
+    font-family: 'Russo One', sans-serif;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    color: var(--mha-white);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 
+      3px 3px 0 var(--mha-green),
+      6px 6px 0 rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--mha-yellow);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  /* ===== SCENE ICON ===== */
+  .scene-icon {
+    font-size: clamp(3rem, 8vw, 6rem);
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    filter: drop-shadow(0 0 20px rgba(92, 184, 92, 0.4));
+    animation: iconPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* ===== SCENE GIF ===== */
+  .scene-gif-wrapper {
+    position: relative;
+    z-index: 1;
+    margin: 10px auto 15px;
+    max-width: 500px;
+    width: 95%;
+  }
+
+  .scene-gif-wrapper img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 3px solid rgba(92, 184, 92, 0.5);
+    box-shadow:
+      0 0 20px rgba(92, 184, 92, 0.2),
+      0 4px 15px rgba(0, 0, 0, 0.4);
+    display: block;
+  }
+
+  .scene-gif-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--mha-green), var(--mha-yellow), var(--mha-pink));
+    z-index: -1;
+    opacity: 0.5;
+    animation: gifBorderGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes gifBorderGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+
+  .scene-gif-wrapper.title-gif {
+    max-width: 550px;
+    width: 95%;
+    margin-bottom: 20px;
+  }
+
+  .scene-gif-wrapper.title-gif img {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow:
+      0 0 30px rgba(255, 215, 0, 0.2),
+      0 6px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .scene-gif-wrapper.title-gif::before {
+    background: linear-gradient(135deg, var(--mha-yellow), var(--mha-red), var(--mha-pink));
+  }
+
+  .scene-gif-wrapper.finale-gif img {
+    border-color: rgba(255, 105, 180, 0.5);
+    box-shadow:
+      0 0 30px rgba(255, 105, 180, 0.3),
+      0 6px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .scene-gif-wrapper.finale-gif::before {
+    background: linear-gradient(135deg, var(--mha-pink), var(--mha-red), var(--mha-yellow));
+  }
+
+  /* ===== SCENE TEXT ===== */
+  .scene-text {
+    font-family: 'Permanent Marker', cursive;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: var(--mha-white);
+    text-align: center;
+    line-height: 1.8;
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .scene-text .highlight {
+    color: var(--mha-green);
+    font-size: 1.15em;
+    text-shadow: 0 0 15px rgba(92, 184, 92, 0.5);
+  }
+
+  .scene-text .heart-highlight {
+    color: var(--mha-pink);
+    text-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+  }
+
+  /* ===== QUIRK CARD ===== */
+  .quirk-card {
+    background: linear-gradient(135deg, var(--mha-dark-green), var(--mha-dark));
+    border: 3px solid var(--mha-green);
+    border-radius: 8px;
+    padding: 15px 25px;
+    margin: 15px auto;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 20px rgba(92, 184, 92, 0.2);
+  }
+
+  .quirk-label {
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.75rem;
+    color: var(--mha-yellow);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .quirk-name {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: var(--mha-white);
+    letter-spacing: 2px;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--mha-green), var(--mha-yellow));
+    z-index: 100;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px var(--mha-green);
+  }
+
+  /* ===== NAVIGATION ===== */
+  .nav-hint {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    font-family: 'Bangers', cursive;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 3px;
+    animation: fadeInUp 1s ease 1.5s both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .nav-arrow {
+    display: inline-block;
+    animation: bounce 1.5s ease infinite;
+    margin-left: 6px;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(6px); }
+  }
+
+  /* ===== INTRO SCREEN ===== */
+  .intro-emblem {
+    width: clamp(120px, 25vw, 200px);
+    height: clamp(120px, 25vw, 200px);
+    border-radius: 50%;
+    border: 5px solid var(--mha-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle, rgba(92,184,92,0.15) 0%, transparent 70%);
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 0 40px rgba(92,184,92,0.3), inset 0 0 40px rgba(92,184,92,0.1);
+    animation: emblemGlow 3s ease-in-out infinite;
+  }
+
+  @keyframes emblemGlow {
+    0%, 100% { box-shadow: 0 0 40px rgba(92,184,92,0.3), inset 0 0 40px rgba(92,184,92,0.1); }
+    50% { box-shadow: 0 0 60px rgba(92,184,92,0.5), inset 0 0 60px rgba(92,184,92,0.2); }
+  }
+
+  .intro-emblem .emblem-text {
+    font-family: 'Russo One', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    color: var(--mha-green);
+    text-shadow: 0 0 20px rgba(92,184,92,0.5);
+  }
+
+  .intro-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: clamp(0.8rem, 2vw, 1.1rem);
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 8px;
+    margin-top: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== FINAL SCREEN ===== */
+  .final-heart {
+    font-size: clamp(4rem, 12vw, 8rem);
+    animation: heartBeat 1s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.6));
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.15); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+  }
+
+  /* ===== SCREEN TRANSITIONS ===== */
+  .manga-panel .element {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .screen.active .manga-panel .element {
+    animation: elementReveal 0.6s var(--spring) forwards;
+  }
+
+  .screen.active .manga-panel .element:nth-child(1) { animation-delay: 0.1s; }
+  .screen.active .manga-panel .element:nth-child(2) { animation-delay: 0.3s; }
+  .screen.active .manga-panel .element:nth-child(3) { animation-delay: 0.5s; }
+  .screen.active .manga-panel .element:nth-child(4) { animation-delay: 0.7s; }
+
+  @keyframes elementReveal {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ===== SMASH TEXT ===== */
+  .smash-text {
+    font-family: 'Russo One', sans-serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    color: var(--mha-yellow);
+    text-shadow: 
+      4px 4px 0 var(--mha-red),
+      8px 8px 0 rgba(0,0,0,0.3);
+    letter-spacing: 8px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .smash-text.green {
+    color: var(--mha-green);
+    text-shadow: 
+      4px 4px 0 var(--mha-dark-green),
+      8px 8px 0 rgba(0,0,0,0.3);
+  }
+
+  /* ===== IMPACT FLASH ===== */
+  .impact-flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease;
+  }
+
+  .impact-flash.flash {
+    animation: flashAnim 0.3s ease;
+  }
+
+  @keyframes flashAnim {
+    0% { opacity: 0.8; }
+    100% { opacity: 0; }
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ===== ENERGY AURA ===== */
+  .energy-aura {
+    position: absolute;
+    inset: -20px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .screen.active .energy-aura {
+    opacity: 1;
+    animation: auraFlicker 2s ease-in-out infinite;
+  }
+
+  @keyframes auraFlicker {
+    0%, 100% { 
+      box-shadow: 0 0 30px rgba(92,184,92,0.2), 0 0 60px rgba(92,184,92,0.1);
+    }
+    50% { 
+      box-shadow: 0 0 50px rgba(92,184,92,0.3), 0 0 100px rgba(92,184,92,0.15);
+    }
+  }
+
+  /* ===== SCENE NUMBER TAG ===== */
+  .scene-tag {
+    position: absolute;
+    top: -14px;
+    left: 20px;
+    background: var(--mha-green);
+    color: var(--mha-darker);
+    font-family: 'Russo One', sans-serif;
+    font-size: 0.7rem;
+    padding: 4px 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    z-index: 2;
+    clip-path: polygon(5% 0%, 95% 0%, 100% 50%, 95% 100%, 5% 100%, 0% 50%);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    body { overflow: hidden; }
+
+    .screen {
+      padding: 15px 10px 50px;
+      justify-content: flex-start;
+      padding-top: 30px;
+    }
+
+    .manga-panel {
+      padding: 20px 15px;
+      width: 95%;
+    }
+
+    .scene-gif-wrapper {
+      max-width: 280px;
+      width: 90%;
+      margin: 8px auto 10px;
+    }
+
+    .scene-gif-wrapper.title-gif {
+      max-width: 320px;
+      margin-bottom: 15px;
+    }
+
+    .scene-gif-wrapper.finale-gif {
+      max-width: 280px;
+    }
+
+    .smash-text {
+      font-size: clamp(2rem, 8vw, 4rem);
+      letter-spacing: 4px;
+    }
+
+    .hero-title {
+      font-size: clamp(1.4rem, 5vw, 2.5rem) !important;
+      letter-spacing: 2px;
+    }
+
+    .scene-text {
+      font-size: clamp(0.85rem, 2.2vw, 1.2rem);
+      line-height: 1.6;
+    }
+
+    .quirk-card {
+      padding: 10px 15px;
+      margin: 10px auto;
+    }
+
+    .quirk-name {
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+    }
+
+    .scene-tag {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+    }
+
+    .final-heart {
+      font-size: clamp(3rem, 10vw, 5rem);
+    }
+
+    .nav-hint {
+      bottom: 15px;
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .screen { padding-top: 20px; }
+
+    .manga-panel { padding: 15px 12px; }
+
+    .scene-gif-wrapper {
+      max-width: 220px;
+    }
+
+    .scene-gif-wrapper.title-gif {
+      max-width: 260px;
+    }
+
+    .smash-text {
+      font-size: clamp(1.6rem, 7vw, 3rem);
+    }
+
+    .scene-text {
+      font-size: 0.8rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Speed Lines Background -->
+<div class="speed-lines" id="speedLines"></div>
+
+<!-- Floating Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Impact Flash -->
+<div class="impact-flash" id="impactFlash"></div>
+
+<!-- Confetti Container -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- ===== SCREEN 0: TITLE ===== -->
+<div class="screen active" id="screen0">
+  <div class="scene-gif-wrapper title-gif element">
+    <img src="An_animestyle_title_202602141826.gif" alt="Title">
+  </div>
+  <div class="hero-title element" style="margin-bottom: 8px;">
+    MY HERO<br>ACADEMIA
+  </div>
+  <div class="hero-subtitle element">— Valentine's Special —</div>
+  <div class="intro-jp element">僕のヒーローアカデミア</div>
+</div>
+
+<!-- ===== SCREEN 1: SHE IS MY HERO ===== -->
+<div class="screen" id="screen1">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 01</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="smash-text green element">SHE IS<br>MY HERO!</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_in_202602141820.gif" alt="My Hero">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      Not all heroes wear capes...<br>
+      Some wear <span class="heart-highlight">your heart on their sleeve</span>
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Hero Name</div>
+      <div class="quirk-name">My #1 Hero ♥</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: SHE COOKS ===== -->
+<div class="screen" id="screen2">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 02</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.8rem, 5vw, 3rem);">QUIRK: COOKING</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_girl_in_202602141825.gif" alt="Cooking">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      She feeds my stomach AND my soul.<br>
+      Every meal is made with <span class="highlight">100% love power!</span><br>
+      Her cooking is <span class="heart-highlight">a superpower</span> that heals all wounds.
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Power Level</div>
+      <div class="quirk-name">∞ / 100</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: CARRYING STUFF ===== -->
+<div class="screen" id="screen3">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 03</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.8rem, 5vw, 3rem);">QUIRK: STRENGTH</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_carrying_202602141823.gif" alt="Carrying">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      We carried packages through the <span class="highlight">big street</span><br>
+      between the houses — side by side,<br>
+      <span class="heart-highlight">partners in every mission!</span><br>
+      No load is too heavy when we carry it together.
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Team Attack</div>
+      <div class="quirk-name">Package Carry Combo!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 4: BUILT HOUSE & KITCHEN ===== -->
+<div class="screen" id="screen4">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 04</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.6rem, 4.5vw, 2.8rem);">QUIRK: CREATION</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_building_202602141821.gif" alt="Building">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      Together we <span class="highlight">built a house</span> — our fortress!<br>
+      Together we <span class="highlight">built a kitchen</span> — our base!<br>
+      Brick by brick, <span class="heart-highlight">we built our world.</span>
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Ultimate Move</div>
+      <div class="quirk-name">Home Builders United!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 5: SOFA RESCUE ===== -->
+<div class="screen" id="screen5">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 05</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.6rem, 4.5vw, 2.8rem);">QUIRK: RESCUE</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_carrying_202602141825.gif" alt="Sofa Rescue">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      We found a sofa outside — <span class="highlight">abandoned!</span><br>
+      Like true heroes, we rescued it<br>
+      and brought it <span class="heart-highlight">home where it belongs.</span><br>
+      A hero saves everyone... even furniture!
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Mission Status</div>
+      <div class="quirk-name">Sofa Rescue: Success!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 6: GROCERY SHOPPING ===== -->
+<div class="screen" id="screen6">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 06</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.6rem, 4.5vw, 2.8rem);">QUIRK: PROVISIONING</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_pushing_202602141822.gif" alt="Grocery Shopping">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      Grocery shopping together —<br>
+      our <span class="highlight">weekly training arc!</span><br>
+      Navigating the aisles like a <span class="heart-highlight">pro hero duo.</span><br>
+      Every trip is an adventure with you.
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Combo Move</div>
+      <div class="quirk-name">Cart & Carry Smash!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 7: LIBRARY STUDYING ===== -->
+<div class="screen" id="screen7">
+  <div class="manga-panel">
+    <div class="scene-tag">EPISODE 07</div>
+    <div class="energy-aura"></div>
+    <div class="action-burst"></div>
+    <div class="hero-title element" style="font-size: clamp(1.6rem, 4.5vw, 2.8rem);">QUIRK: INTELLECT</div>
+    <div class="scene-gif-wrapper element">
+      <img src="Anime_couple_sitting_202602141822.gif" alt="Library Studying">
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      Side by side at the <span class="highlight">library</span>,<br>
+      studying, growing, <span class="heart-highlight">leveling up together.</span><br>
+      The smartest heroes train their minds<br>
+      as much as their hearts.
+    </div>
+    <div class="quirk-card element">
+      <div class="quirk-label">Training Arc</div>
+      <div class="quirk-name">Study Session: Plus Ultra!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 8: FINALE ===== -->
+<div class="screen" id="screen8">
+  <div class="manga-panel" style="border-color: var(--mha-pink);">
+    <div class="scene-tag" style="background: var(--mha-pink);">SEASON FINALE</div>
+    <div class="energy-aura" style="--aura-color: var(--mha-pink);"></div>
+    <div class="action-burst"></div>
+    <div class="final-heart element">💖</div>
+    <div class="smash-text element" style="color: var(--mha-pink); text-shadow: 4px 4px 0 var(--mha-red), 8px 8px 0 rgba(0,0,0,0.3);">
+      PLUS ULTRA!
+    </div>
+    <div class="scene-text element" style="margin-top: 15px;">
+      You are my hero, my partner,<br>
+      my <span class="highlight">One For All.</span><br>
+      <span class="heart-highlight" style="font-size: 1.4em;">Happy Valentine's Day!</span><br>
+      I love you beyond 100%!
+    </div>
+    <div class="quirk-card element" style="border-color: var(--mha-pink);">
+      <div class="quirk-label">Final Form</div>
+      <div class="quirk-name">Forever & Always ♥</div>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation Hint -->
+<div class="nav-hint" id="navHint">
+  CLICK OR PRESS → TO CONTINUE <span class="nav-arrow">▶</span>
+</div>
+
+<script>
+  // ===== INIT =====
+  let currentScreen = 0;
+  const totalScreens = 9;
+  let transitioning = false;
+
+  // ===== CREATE SPEED LINES =====
+  const speedLinesEl = document.getElementById('speedLines');
+  for (let i = 0; i < 30; i++) {
+    const line = document.createElement('div');
+    line.className = 'speed-line';
+    line.style.left = Math.random() * 100 + '%';
+    line.style.height = (Math.random() * 200 + 100) + 'px';
+    line.style.animationDelay = Math.random() * 2 + 's';
+    line.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+    line.style.opacity = Math.random() * 0.5 + 0.1;
+    speedLinesEl.appendChild(line);
+  }
+
+  // ===== CREATE PARTICLES =====
+  const particlesEl = document.getElementById('particles');
+  const colors = ['#5CB85C', '#FFD700', '#FF69B4', '#3498DB', '#FF6B35'];
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top = Math.random() * 100 + '%';
+    p.style.width = p.style.height = (Math.random() * 6 + 2) + 'px';
+    p.style.background = colors[Math.floor(Math.random() * colors.length)];
+    p.style.animationDelay = Math.random() * 4 + 's';
+    p.style.animationDuration = (Math.random() * 3 + 3) + 's';
+    particlesEl.appendChild(p);
+  }
+
+  // ===== SCREEN NAVIGATION =====
+  function goToScreen(index) {
+    if (index < 0 || index >= totalScreens || transitioning) return;
+    transitioning = true;
+
+    // Flash effect
+    const flash = document.getElementById('impactFlash');
+    flash.classList.remove('flash');
+    void flash.offsetWidth;
+    flash.classList.add('flash');
+
+    // Hide current
+    const current = document.getElementById('screen' + currentScreen);
+    current.classList.remove('active');
+
+    // Show new
+    currentScreen = index;
+    const next = document.getElementById('screen' + currentScreen);
+
+    setTimeout(() => {
+      next.classList.add('active');
+      next.scrollTop = 0;
+      transitioning = false;
+
+      // Update progress bar
+      const progress = ((currentScreen) / (totalScreens - 1)) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+
+      // Hide nav hint on last screen, trigger confetti
+      if (currentScreen === totalScreens - 1) {
+        document.getElementById('navHint').style.opacity = '0';
+        launchConfetti();
+      } else {
+        document.getElementById('navHint').style.opacity = '';
+      }
+    }, 150);
+  }
+
+  function nextScreen() {
+    goToScreen(currentScreen + 1);
+  }
+
+  function prevScreen() {
+    goToScreen(currentScreen - 1);
+  }
+
+  // ===== INPUT HANDLERS =====
+  document.addEventListener('click', (e) => {
+    if (currentScreen < totalScreens - 1) nextScreen();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      if (currentScreen < totalScreens - 1) nextScreen();
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prevScreen();
+    }
+  });
+
+  // Touch swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && currentScreen < totalScreens - 1) nextScreen();
+      else if (diff < 0) prevScreen();
+    }
+  });
+
+  // ===== CONFETTI =====
+  function launchConfetti() {
+    const container = document.getElementById('confetti');
+    const confettiColors = ['#5CB85C', '#FFD700', '#FF69B4', '#E74C3C', '#3498DB', '#FF6B35', '#fff'];
+    
+    for (let i = 0; i < 80; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + '%';
+      piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      piece.style.width = (Math.random() * 10 + 5) + 'px';
+      piece.style.height = (Math.random() * 10 + 5) + 'px';
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+      piece.style.animationDelay = Math.random() * 1.5 + 's';
+      container.appendChild(piece);
+    }
+
+    // Cleanup
+    setTimeout(() => { container.innerHTML = ''; }, 5000);
+  }
+</script>
+
+</body>
+</html>
